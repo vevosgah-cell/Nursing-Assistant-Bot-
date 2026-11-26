@@ -100,5 +100,72 @@ document.getElementById('lectureFile').value='';
 statusBox.textContent='حدث خطأ: '+error.message;
 }
   }
+  async function loadLectures(){
+const list=document.getElementById('lecturesList');
+const status=document.getElementById('lecturesStatus');
+
+list.innerHTML='';
+status.textContent='جارٍ تحميل المحاضرات...';
+
+try{
+const {data,error}=await supabaseClient
+.from('lectures')
+.select('id,title,subject,description,file_path,created_at')
+.order('created_at',{ascending:false});
+
+if(error)throw error;
+
+if(!data||data.length===0){
+status.textContent='لا توجد محاضرات مرفوعة حالياً.';
+return;
+}
+
+for(const lecture of data){
+const card=document.createElement('div');
+card.className='card section';
+
+const title=document.createElement('h3');
+title.textContent=lecture.title;
+
+const subject=document.createElement('p');
+subject.textContent='المادة: '+lecture.subject;
+
+const description=document.createElement('p');
+description.textContent=lecture.description||'';
+
+const button=document.createElement('button');
+button.className='primary';
+button.textContent='تحميل المحاضرة';
+
+button.onclick=async()=>{
+button.disabled=true;
+button.textContent='جارٍ تجهيز الملف...';
+
+const {data:link,error:linkError}=await supabaseClient
+.storage.from('lectures')
+.createSignedUrl(lecture.file_path,300);
+
+if(linkError){
+status.textContent='تعذر فتح الملف: '+linkError.message;
+button.disabled=false;
+button.textContent='تحميل المحاضرة';
+return;
+}
+
+window.open(link.signedUrl,'_blank');
+button.disabled=false;
+button.textContent='تحميل المحاضرة';
+};
+
+card.append(title,subject,description,button);
+list.appendChild(card);
+}
+
+status.textContent='عدد المحاضرات: '+data.length;
+
+}catch(error){
+status.textContent='حدث خطأ: '+error.message;
+}
+  }
   supabaseClient.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;setTimeout(()=>updateAccountUI(),0);});refreshSession();
 </script></body></html>
