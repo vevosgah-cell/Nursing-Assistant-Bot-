@@ -64,6 +64,67 @@ async function sendMessage(){if(!currentUser){show('home');status('authStatus','
 async function loadAdmin(){if(!isAdmin){status('adminStatus','غير مصرح لك بالدخول.');return;}status('adminStatus','جارٍ تحميل البيانات...');const {data:students,error}=await supabaseClient.from('students').select('*').order('created_at',{ascending:false});if(error){status('adminStatus',error.message);return;}const st=document.getElementById('studentsTable');st.innerHTML='';(students||[]).forEach(s=>{const tr=document.createElement('tr');tr.innerHTML='<td></td><td></td><td></td>';tr.children[0].textContent=s.full_name||'—';tr.children[1].textContent=s.id;tr.children[2].textContent=s.created_at?new Date(s.created_at).toLocaleString():'';st.appendChild(tr);});const {data:convs,error:ce}=await supabaseClient.from('conversations').select('*').order('created_at',{ascending:false});if(ce){status('adminStatus',ce.message);return;}const ct=document.getElementById('conversationsTable');ct.innerHTML='';(convs||[]).forEach(c=>{const tr=document.createElement('tr');const title=document.createElement('td');title.textContent=c.title||'محادثة';const student=document.createElement('td');student.textContent=c.student_id||'';const date=document.createElement('td');date.textContent=c.created_at?new Date(c.created_at).toLocaleString():'';const action=document.createElement('td');const b=document.createElement('button');b.className='primary';b.textContent='عرض الرسائل';b.onclick=()=>adminViewMessages(c.id);action.appendChild(b);tr.append(title,student,date,action);ct.appendChild(tr);});status('adminStatus','تم تحميل البيانات.');}
 async function adminViewMessages(conversationId){const {data,error}=await supabaseClient.from('messages').select('*').eq('conversation_id',conversationId).order('created_at',{ascending:true});if(error){status('adminStatus',error.message);return;}const tb=document.getElementById('messagesTable');tb.innerHTML='';(data||[]).forEach(m=>{const tr=document.createElement('tr');const role=document.createElement('td');role.textContent=m.role;const content=document.createElement('td');content.textContent=m.content;const date=document.createElement('td');date.textContent=m.created_at?new Date(m.created_at).toLocaleString():'';tr.append(role,content,date);tb.appendChild(tr);});}
 async function uploadLecture(){
+
+const title=document.getElementById('lectureTitle').value.trim();
+const group=document.getElementById('lectureGroup').value;
+
+const subjectSelect=document.getElementById('lectureSubjectSelect');
+const subject=subjectSelect.value;
+const subjectName=subjectSelect.options[subjectSelect.selectedIndex]?.textContent || '';
+
+const description=document.getElementById('lectureDescription').value.trim();
+const file=document.getElementById('lectureFile').files[0];
+const statusBox=document.getElementById('lectureStatus');
+
+if(!title||!group||!subject||!file){
+statusBox.textContent='يرجى إكمال جميع الحقول واختيار ملف PDF.';
+return;
+}
+
+if(file.type!=='application/pdf'){
+statusBox.textContent='يرجى اختيار ملف PDF فقط.';
+return;
+}
+
+statusBox.textContent='جارٍ رفع المحاضرة...';
+
+try{
+
+const path=crypto.randomUUID()+'.pdf';
+
+const {error:uploadError}=await supabaseClient
+.storage.from('lectures')
+.upload(path,file);
+
+if(uploadError)throw uploadError;
+
+const {error:dbError}=await supabaseClient
+.from('lectures')
+.insert({
+title:title,
+subject:subjectName,
+group_name:group,
+subject_name:subject,
+description:description,
+file_path:path,
+uploaded_by:currentUser.id
+});
+
+if(dbError)throw dbError;
+
+statusBox.textContent='تم رفع المحاضرة بنجاح.';
+
+document.getElementById('lectureTitle').value='';
+document.getElementById('lectureGroup').value='';
+document.getElementById('lectureSubjectSelect').innerHTML='<option value="">اختر المادة</option>';
+document.getElementById('lectureDescription').value='';
+document.getElementById('lectureFile').value='';
+
+}catch(error){
+statusBox.textContent='حدث خطأ: '+error.message;
+}
+
+  }
 const title=document.getElementById('lectureTitle').value.trim();
 const subject=document.getElementById('lectureSubject').value.trim();
 const description=document.getElementById('lectureDescription').value.trim();
