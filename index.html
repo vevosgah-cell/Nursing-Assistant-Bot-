@@ -18,6 +18,28 @@
 <div class="cards"><div class="card"><h3>شرح المحاضرات</h3><p>تبسيط المفاهيم التمريضية والإجابة عن أسئلة الدراسة.</p></div><div class="card"><h3>مراجعة وأسئلة</h3><p>مساعدة في مراجعة المعلومات وصناعة أسئلة تدريبية.</p></div><div class="card"><h3>حالات سريرية</h3><p>تدريب تعليمي على الحالات والخطط التمريضية.</p></div></div><div class="note">المساعد مخصص للتعليم وليس بديلاً عن بروتوكولات المستشفى أو قرار الفريق الطبي.</div></section>
 <section id="chatPage" class="content hidden"><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"><button class="primary" onclick="newConversation()">محادثة جديدة</button><select id="conversationSelect" onchange="loadMessages(this.value)" style="padding:10px;border:1px solid var(--line);border-radius:10px;flex:1"><option value="">اختر محادثة</option></select></div><div class="chat"><div id="chatBody" class="chatbody"><div class="msg bot">أهلاً! بعد ربط الذكاء الاصطناعي، يمكنك طرح أسئلة تمريضية هنا.</div></div><div class="chatbar"><input id="chatInput" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter')sendMessage()"><button class="primary" onclick="sendMessage()">إرسال</button></div></div><div id="chatStatus" class="status"></div></section>
 <section id="lecturesPage" class="content hidden">
+
+<h2>المحاضرات الدراسية</h2>
+<p class="muted">اختر مجموعتك الدراسية ثم المادة لعرض المحاضرات.</p>
+
+<div class="authbox">
+<label>المجموعة الدراسية</label>
+<select id="studentGroup" onchange="updateStudentSubjects()" style="width:100%;padding:12px;margin:10px 0;font:inherit">
+<option value="">اختر المجموعة</option>
+<option value="community">تمريض صحة المجتمع</option>
+<option value="mental">تمريض الصحة النفسية</option>
+</select>
+
+<label>المادة الدراسية</label>
+<select id="studentSubject" onchange="loadLectures()" style="width:100%;padding:12px;margin:10px 0;font:inherit">
+<option value="">اختر المادة</option>
+</select>
+</div>
+
+<div id="lecturesList"></div>
+<div id="lecturesStatus" class="status"></div>
+
+</section>
 <h2>المحاضرات الدراسية</h2>
 <p class="muted">المحاضرات المرفوعة من إدارة الموقع.</p>
 <div id="lecturesList"></div>
