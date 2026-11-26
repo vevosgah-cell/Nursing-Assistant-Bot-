@@ -254,6 +254,98 @@ document.getElementById('lecturesStatus').textContent='';
 
   }
   async function loadLectures(){
+
+const group=document.getElementById('studentGroup').value;
+const subject=document.getElementById('studentSubject').value;
+
+const list=document.getElementById('lecturesList');
+const status=document.getElementById('lecturesStatus');
+
+list.innerHTML='';
+
+if(!group){
+status.textContent='يرجى اختيار المجموعة الدراسية.';
+return;
+}
+
+if(!subject){
+status.textContent='يرجى اختيار المادة الدراسية.';
+return;
+}
+
+status.textContent='جارٍ تحميل المحاضرات...';
+
+try{
+
+const {data,error}=await supabaseClient
+.from('lectures')
+.select('id,title,subject,description,file_path,created_at')
+.eq('group_name',group)
+.eq('subject_name',subject)
+.order('created_at',{ascending:false});
+
+if(error)throw error;
+
+if(!data||data.length===0){
+status.textContent='لا توجد محاضرات لهذه المادة حالياً.';
+return;
+}
+
+for(const lecture of data){
+
+const card=document.createElement('div');
+card.className='card section';
+
+const title=document.createElement('h3');
+title.textContent=lecture.title;
+
+const subjectText=document.createElement('p');
+subjectText.textContent='المادة: '+lecture.subject;
+
+const description=document.createElement('p');
+description.textContent=lecture.description||'';
+
+const button=document.createElement('button');
+button.className='primary';
+button.textContent='تحميل المحاضرة';
+
+button.onclick=async()=>{
+
+button.disabled=true;
+button.textContent='جارٍ تجهيز الملف...';
+
+const {data:link,error:linkError}=await supabaseClient
+.storage.from('lectures')
+.createSignedUrl(lecture.file_path,300);
+
+if(linkError){
+status.textContent='تعذر فتح الملف: '+linkError.message;
+button.disabled=false;
+button.textContent='تحميل المحاضرة';
+return;
+}
+
+window.open(link.signedUrl,'_blank');
+
+button.disabled=false;
+button.textContent='تحميل المحاضرة';
+
+};
+
+card.append(title,subjectText,description,button);
+list.appendChild(card);
+
+}
+
+status.textContent='عدد المحاضرات: '+data.length;
+
+}catch(error){
+
+status.textContent='حدث خطأ: '+error.message;
+
+}
+
+  }
 const list=document.getElementById('lecturesList');
 const status=document.getElementById('lecturesStatus');
 
