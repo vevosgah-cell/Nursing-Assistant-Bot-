@@ -242,7 +242,7 @@ mental:[
 
 select.innerHTML='<option value="">اختر المادة</option>';
 
-(selectSubjects=subjects[group]||[]).forEach(item=>{
+(subjects[group]||[]).forEach(item=>{
 const option=document.createElement('option');
 option.value=item[0];
 option.textContent=item[1];
