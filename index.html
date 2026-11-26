@@ -79,7 +79,36 @@ async function newConversation(){if(!currentUser){show('home');status('authStatu
 async function loadConversations(){if(!currentUser)return;const {data,error}=await supabaseClient.from('conversations').select('id,title,created_at').eq('student_id',currentUser.id).order('created_at',{ascending:false});if(error){status('chatStatus',error.message);return;}const select=document.getElementById('conversationSelect');select.innerHTML='<option value="">اختر محادثة</option>';(data||[]).forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.title||'محادثة';select.appendChild(o);});if(currentConversation&&select.querySelector('option[value="'+currentConversation+'"]'))select.value=currentConversation;}
 async function loadMessages(id){if(!id){currentConversation=null;return;}currentConversation=id;if(!currentUser)return;const {data,error}=await supabaseClient.from('messages').select('*').eq('conversation_id',id).order('created_at',{ascending:true});if(error){status('chatStatus',error.message);return;}const body=document.getElementById('chatBody');body.innerHTML='';(data||[]).forEach(m=>appendMessage(m.role,m.content));}
 function appendMessage(role,content){const body=document.getElementById('chatBody'),div=document.createElement('div');div.className='msg '+(role==='user'?'student':'bot');div.textContent=content;body.appendChild(div);body.scrollTop=body.scrollHeight;}
-async function sendMessage(){if(!currentUser){show('home');status('authStatus','سجّل الدخول أولاً.');return;}const input=document.getElementById('chatInput'),content=input.value.trim();if(!content)return;if(!currentConversation){await newConversation();if(!currentConversation)return;}input.value='';appendMessage('user',content);const {error}=await supabaseClient.from('messages').insert({conversation_id:currentConversation,role:'user',content});if(error){status('chatStatus',error.message);return;}const reply='وصل سؤالك وتم حفظه. اتصال الذكاء الاصطناعي لم يُفعّل بعد؛ هذه نسخة تجريبية من النظام.';appendMessage('assistant',reply);const {error:err2}=await supabaseClient.from('messages').insert({conversation_id:currentConversation,role:'assistant',content:reply});if(err2)status('chatStatus',err2.message);}
+async function sendMessage(){
+if(!currentUser){show('home');status('authStatus','سجّل الدخول أولاً.');return;}
+const input=document.getElementById('chatInput'),content=input.value.trim();
+if(!content)return;
+if(!currentConversation){await newConversation();if(!currentConversation)return;}
+
+const {data:oldMessages,error:historyError}=await supabaseClient.from('messages').select('role,content').eq('conversation_id',currentConversation).order('created_at',{ascending:true});
+if(historyError){status('chatStatus',historyError.message);return;}
+
+input.value='';
+appendMessage('user',content);
+
+const {error}=await supabaseClient.from('messages').insert({conversation_id:currentConversation,role:'user',content});
+if(error){status('chatStatus',error.message);return;}
+
+status('chatStatus','جارٍ التفكير...');
+const {data,error:aiError}=await supabaseClient.functions.invoke('nursing-ai',{body:{message:content,history:oldMessages||[]}});
+
+if(aiError){
+status('chatStatus','تعذر الاتصال بالذكاء الاصطناعي: '+aiError.message);
+return;
+}
+
+const reply=data?.reply||'لم تصل إجابة.';
+appendMessage('assistant',reply);
+
+const {error:err2}=await supabaseClient.from('messages').insert({conversation_id:currentConversation,role:'assistant',content:reply});
+if(err2)status('chatStatus',err2.message);
+else status('chatStatus','');
+  }
 async function loadAdmin(){if(!isAdmin){status('adminStatus','غير مصرح لك بالدخول.');return;}status('adminStatus','جارٍ تحميل البيانات...');const {data:students,error}=await supabaseClient.from('students').select('*').order('created_at',{ascending:false});if(error){status('adminStatus',error.message);return;}const st=document.getElementById('studentsTable');st.innerHTML='';(students||[]).forEach(s=>{const tr=document.createElement('tr');tr.innerHTML='<td></td><td></td><td></td>';tr.children[0].textContent=s.full_name||'—';tr.children[1].textContent=s.id;tr.children[2].textContent=s.created_at?new Date(s.created_at).toLocaleString():'';st.appendChild(tr);});const {data:convs,error:ce}=await supabaseClient.from('conversations').select('*').order('created_at',{ascending:false});if(ce){status('adminStatus',ce.message);return;}const ct=document.getElementById('conversationsTable');ct.innerHTML='';(convs||[]).forEach(c=>{const tr=document.createElement('tr');const title=document.createElement('td');title.textContent=c.title||'محادثة';const student=document.createElement('td');student.textContent=c.student_id||'';const date=document.createElement('td');date.textContent=c.created_at?new Date(c.created_at).toLocaleString():'';const action=document.createElement('td');const b=document.createElement('button');b.className='primary';b.textContent='عرض الرسائل';b.onclick=()=>adminViewMessages(c.id);action.appendChild(b);tr.append(title,student,date,action);ct.appendChild(tr);});status('adminStatus','تم تحميل البيانات.');}
 async function adminViewMessages(conversationId){const {data,error}=await supabaseClient.from('messages').select('*').eq('conversation_id',conversationId).order('created_at',{ascending:true});if(error){status('adminStatus',error.message);return;}const tb=document.getElementById('messagesTable');tb.innerHTML='';(data||[]).forEach(m=>{const tr=document.createElement('tr');const role=document.createElement('td');role.textContent=m.role;const content=document.createElement('td');content.textContent=m.content;const date=document.createElement('td');date.textContent=m.created_at?new Date(m.created_at).toLocaleString():'';tr.append(role,content,date);tb.appendChild(tr);});}
 
