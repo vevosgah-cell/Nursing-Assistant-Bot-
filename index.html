@@ -220,6 +220,39 @@ option.textContent=item[1];
 select.appendChild(option);
 });
   }
+  function updateStudentSubjects(){
+
+const group=document.getElementById('studentGroup').value;
+const select=document.getElementById('studentSubject');
+
+const subjects={
+community:[
+['community_nursing','تمريض صحة المجتمع'],
+['epidemiology','علم الوبائيات'],
+['health_promotion','تعزيز الصحة'],
+['professional_issues','موضوعات وقضايا مهنية'],
+['nursing_management','الإدارة والقيادة في التمريض']
+],
+mental:[
+['psychiatric_nursing','تمريض الصحة النفسية'],
+['critical_care','تمريض الحالات الحرجة'],
+['psychology','علم النفس']
+]
+};
+
+select.innerHTML='<option value="">اختر المادة</option>';
+
+(selectSubjects=subjects[group]||[]).forEach(item=>{
+const option=document.createElement('option');
+option.value=item[0];
+option.textContent=item[1];
+select.appendChild(option);
+});
+
+document.getElementById('lecturesList').innerHTML='';
+document.getElementById('lecturesStatus').textContent='';
+
+  }
   async function loadLectures(){
 const list=document.getElementById('lecturesList');
 const status=document.getElementById('lecturesStatus');
