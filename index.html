@@ -19,7 +19,7 @@
 <section id="adminPage" class="content hidden"><h2>لوحة الإدارة</h2><p class="muted">عرض الحسابات والمحادثات المسجلة في قاعدة البيانات.</p><div class="section"><h3>الطلاب</h3><div style="overflow:auto"><table><thead><tr><th>الاسم</th><th>البريد / معرف الحساب</th><th>تاريخ التسجيل</th></tr></thead><tbody id="studentsTable"></tbody></table></div></div><div class="section"><h3>المحادثات</h3><div style="overflow:auto"><table><thead><tr><th>عنوان المحادثة</th><th>معرف الطالب</th><th>التاريخ</th><th></th></tr></thead><tbody id="conversationsTable"></tbody></table></div></div><div class="section"><h3>رسائل المحادثة</h3><div style="overflow:auto"><table><thead><tr><th>النوع</th><th>الرسالة</th><th>التاريخ</th></tr></thead><tbody id="messagesTable"></tbody></table></div></div><div id="adminStatus" class="status"></div></section>
 </main></div>
 <script>
-const SUPABASE_URL = "https://cfrsjllwbtxzhkthgynp.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://cfrsjllwbtxzhkthgynp.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_p6DwVPHHcZF6G7MwB4HNRw_o4gF80ps";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 let currentConversation=null;let currentUser=null;let isAdmin=false;
