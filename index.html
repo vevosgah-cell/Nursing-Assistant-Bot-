@@ -98,9 +98,18 @@ status('chatStatus','جارٍ التفكير...');
 const {data,error:aiError}=await supabaseClient.functions.invoke('nursing-ai',{body:{message:content,history:oldMessages||[]}});
 
 if(aiError){
-status('chatStatus','تعذر الاتصال بالذكاء الاصطناعي: '+aiError.message);
-return;
+let detail=aiError.message||'خطأ غير معروف';
+try{
+const response=aiError.context;
+if(response){
+const body=await response.clone().json();
+detail=body.error||JSON.stringify(body);
 }
+}catch(e){}
+console.error('Nursing AI error:',aiError);
+status('chatStatus','تفاصيل الخطأ: '+detail);
+return;
+  }
 
 const reply=data?.reply||'لم تصل إجابة.';
 appendMessage('assistant',reply);
