@@ -16,7 +16,17 @@
 <div id="profileBox" class="authbox hidden"><h3 id="accountName">أنت مسجل الدخول</h3><p id="accountEmail" class="muted"></p><div class="actions"><button class="primary logout" onclick="logout()">تسجيل الخروج</button><button class="primary" onclick="show('chatPage')">ابدأ المحادثة</button></div></div>
 <div class="cards"><div class="card"><h3>شرح المحاضرات</h3><p>تبسيط المفاهيم التمريضية والإجابة عن أسئلة الدراسة.</p></div><div class="card"><h3>مراجعة وأسئلة</h3><p>مساعدة في مراجعة المعلومات وصناعة أسئلة تدريبية.</p></div><div class="card"><h3>حالات سريرية</h3><p>تدريب تعليمي على الحالات والخطط التمريضية.</p></div></div><div class="note">المساعد مخصص للتعليم وليس بديلاً عن بروتوكولات المستشفى أو قرار الفريق الطبي.</div></section>
 <section id="chatPage" class="content hidden"><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"><button class="primary" onclick="newConversation()">محادثة جديدة</button><select id="conversationSelect" onchange="loadMessages(this.value)" style="padding:10px;border:1px solid var(--line);border-radius:10px;flex:1"><option value="">اختر محادثة</option></select></div><div class="chat"><div id="chatBody" class="chatbody"><div class="msg bot">أهلاً! بعد ربط الذكاء الاصطناعي، يمكنك طرح أسئلة تمريضية هنا.</div></div><div class="chatbar"><input id="chatInput" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter')sendMessage()"><button class="primary" onclick="sendMessage()">إرسال</button></div></div><div id="chatStatus" class="status"></div></section>
-<section id="adminPage" class="content hidden"><h2>لوحة الإدارة</h2><p class="muted">عرض الحسابات والمحادثات المسجلة في قاعدة البيانات.</p><div class="section"><h3>الطلاب</h3><div style="overflow:auto"><table><thead><tr><th>الاسم</th><th>البريد / معرف الحساب</th><th>تاريخ التسجيل</th></tr></thead><tbody id="studentsTable"></tbody></table></div></div><div class="section"><h3>المحادثات</h3><div style="overflow:auto"><table><thead><tr><th>عنوان المحادثة</th><th>معرف الطالب</th><th>التاريخ</th><th></th></tr></thead><tbody id="conversationsTable"></tbody></table></div></div><div class="section"><h3>رسائل المحادثة</h3><div style="overflow:auto"><table><thead><tr><th>النوع</th><th>الرسالة</th><th>التاريخ</th></tr></thead><tbody id="messagesTable"></tbody></table></div></div><div id="adminStatus" class="status"></div></section>
+<section id="adminPage" class="content hidden"><h2>لوحة الإدارة</h2><p class="muted">عرض الحسابات والمحادثات المسجلة في قاعدة البيانات.</p><div class="section"><h3>الطلاب</h3><div style="overflow:auto"><table><thead><tr><th>الاسم</th><th>البريد / معرف الحساب</th><th>تاريخ التسجيل</th></tr></thead><tbody id="studentsTable"></tbody></table></div></div><div class="section"><h3>المحادثات</h3><div style="overflow:auto"><table><thead><tr><th>عنوان المحادثة</th><th>معرف الطالب</th><th>التاريخ</th><th></th></tr></thead><tbody id="conversationsTable"></tbody></table></div></div><div class="section"><h3>رسائل المحادثة</h3><div style="overflow:auto"><table><thead><tr><th>النوع</th><th>الرسالة</th><th>التاريخ</th></tr></thead><tbody id="messagesTable"></tbody></table></div></div><div class="section">
+<h3>إضافة محاضرة</h3>
+<div class="authbox">
+<input id="lectureTitle" placeholder="عنوان المحاضرة">
+<input id="lectureSubject" placeholder="المادة">
+<input id="lectureDescription" placeholder="وصف المحاضرة (اختياري)">
+<input id="lectureFile" type="file" accept=".pdf,application/pdf">
+<button class="primary" onclick="uploadLecture()">رفع المحاضرة</button>
+<div id="lectureStatus" class="status"></div>
+</div>
+</div><div id="adminStatus" class="status"></div></section>
 </main></div>
 <script>
 const SUPABASE_URL = "https://cfrsjllwbtxzhkthgynp.supabase.co";
