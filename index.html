@@ -757,10 +757,10 @@ function renderWeeklySchedule(data, elementId){
   const tomorrow = getTomorrowDay();
   const tomorrowLectures = data[tomorrow] || [];
 
-  let tomorrowHTML = `<strong>📅 جدول باچر — ${dayArabic[tomorrow]}</strong>`;
+  let tomorrowHTML = `<strong>📅 جدول محاضرات يوم غد — ${dayArabic[tomorrow]}</strong>`;
 
   if(tomorrowLectures.length === 0){
-    tomorrowHTML += `<div>ماكو محاضرات باچر — OFF.</div>`;
+    tomorrowHTML += `<div>لاتوجد محاضرات غداً — OFF.</div>`;
   }else{
     tomorrowLectures.forEach(lecture => {
       tomorrowHTML += `
