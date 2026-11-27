@@ -221,6 +221,46 @@ async function loadConversations(){
   select.value=id;
   status('chatStatus','تم تغيير اسم المحادثة بنجاح.');
   }
+  
+async function deleteConversation(){
+  if(!currentUser){
+    status('chatStatus','سجّل الدخول أولاً.');
+    return;
+  }
+
+  const select=document.getElementById('conversationSelect');
+  const id=select.value;
+
+  if(!id){
+    status('chatStatus','اختر محادثة أولاً.');
+    return;
+  }
+
+  const title=select.options[select.selectedIndex].text;
+
+  if(!confirm('هل أنت متأكد من حذف "'+title+'" وجميع رسائلها؟')){
+    return;
+  }
+
+  const {error}=await supabaseClient
+    .from('conversations')
+    .delete()
+    .eq('id',id)
+    .eq('student_id',currentUser.id);
+
+  if(error){
+    status('chatStatus','تعذر حذف المحادثة: '+error.message);
+    return;
+  }
+
+  currentConversation=null;
+  document.getElementById('chatBody').innerHTML='';
+
+  await loadConversations();
+
+  status('chatStatus','تم حذف المحادثة بنجاح.');
+}
+
   async function loadMessages(id){if(!id){currentConversation=null;return;}currentConversation=id;if(!currentUser)return;const {data,error}=await supabaseClient.from('messages').select('*').eq('conversation_id',id).order('created_at',{ascending:true});if(error){status('chatStatus',error.message);return;}const body=document.getElementById('chatBody');body.innerHTML='';(data||[]).forEach(m=>appendMessage(m.role,m.content));}
 function appendMessage(role,content){const body=document.getElementById('chatBody'),div=document.createElement('div');div.className='msg '+(role==='user'?'student':'bot');div.textContent=content;body.appendChild(div);body.scrollTop=body.scrollHeight;}
 async function sendMessage(){
