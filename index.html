@@ -74,9 +74,46 @@ async function login(){const email=document.getElementById('email').value.trim()
 async function logout(){await supabaseClient.auth.signOut();currentUser=null;isAdmin=false;currentConversation=null;updateAccountUI();show('home');status('authStatus','تم تسجيل الخروج.');}
 async function refreshSession(){const {data:{session}}=await supabaseClient.auth.getSession();currentUser=session?.user||null;updateAccountUI();}
 async function updateAccountUI(){document.getElementById('authbox').classList.toggle('hidden',!!currentUser);document.getElementById('profileBox').classList.toggle('hidden',!currentUser);if(currentUser){const {data:student}=await supabaseClient.from('students').select('full_name').eq('id',currentUser.id).maybeSingle();
-document.getElementById('accountName').textContent='مرحباً '+(student?.full_name||'طالب');document.getElementById('accountEmail').textContent=currentUser.email||'';const {data,error}=await supabaseClient.rpc('is_admin');isAdmin=!error&&data===true;document.getElementById('adminNav').classList.toggle('hidden',!isAdmin);await loadConversations();}else{document.getElementById('adminNav').classList.add('hidden');document.getElementById('conversationSelect').innerHTML='<option value="">اختر محادثة</option>';}}
-async function newConversation(){if(!currentUser){show('home');status('authStatus','سجّل الدخول أولاً.');return;}const {data,error}=await supabaseClient.from('conversations').insert({student_id:currentUser.id,title:'محادثة جديدة'}).select().single();if(error){status('chatStatus',error.message);return;}currentConversation=data.id;await loadConversations();document.getElementById('conversationSelect').value=data.id;document.getElementById('chatBody').innerHTML='';status('chatStatus','تم إنشاء محادثة جديدة.');}
-async function loadConversations(){if(!currentUser)return;const {data,error}=await supabaseClient.from('conversations').select('id,title,created_at').eq('student_id',currentUser.id).order('created_at',{ascending:false});if(error){status('chatStatus',error.message);return;}const select=document.getElementById('conversationSelect');select.innerHTML='<option value="">اختر محادثة</option>';(data||[]).forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.title||'محادثة';select.appendChild(o);});if(currentConversation&&select.querySelector('option[value="'+currentConversation+'"]'))select.value=currentConversation;}
+document.getElementById('accountName').textContent='مرحباً async function newConversation(){if(!currentUser){show('home');status('authStatus','سجّل الدخول أولاً.');return;}const {data,error}=await supabaseClient.from('conversations').insert({student_id:currentUser.id,title:'محادثة جديدة'}).select().single();if(error){status('chatStatus',error.message);return;}currentConversation=data.id;await loadConversations();document.getElementById('conversationSelect').value=data.id;document.getElementById('chatBody').innerHTML='';status('chatStatus','تم إنشاء محادثة جديدة.');}
+async function newConversation(){
+  if(!currentUser){
+    show('home');
+    status('authStatus','سجّل الدخول أولاً.');
+    return;
+  }
+
+  const {count,error:countError}=await supabaseClient
+    .from('conversations')
+    .select('*',{count:'exact',head:true})
+    .eq('student_id',currentUser.id);
+
+  if(countError){
+    status('chatStatus','تعذر حساب المحادثات: '+countError.message);
+    return;
+  }
+
+  const title='محادثة '+((count||0)+1);
+
+  const {data,error}=await supabaseClient
+    .from('conversations')
+    .insert({
+      student_id:currentUser.id,
+      title:title
+    })
+    .select()
+    .single();
+
+  if(error){
+    status('chatStatus',error.message);
+    return;
+  }
+
+  currentConversation=data.id;
+  await loadConversations();
+  document.getElementById('conversationSelect').value=data.id;
+  document.getElementById('chatBody').innerHTML='';
+  status('chatStatus','تم إنشاء '+title+' بنجاح.');
+}
 async function loadMessages(id){if(!id){currentConversation=null;return;}currentConversation=id;if(!currentUser)return;const {data,error}=await supabaseClient.from('messages').select('*').eq('conversation_id',id).order('created_at',{ascending:true});if(error){status('chatStatus',error.message);return;}const body=document.getElementById('chatBody');body.innerHTML='';(data||[]).forEach(m=>appendMessage(m.role,m.content));}
 function appendMessage(role,content){const body=document.getElementById('chatBody'),div=document.createElement('div');div.className='msg '+(role==='user'?'student':'bot');div.textContent=content;body.appendChild(div);body.scrollTop=body.scrollHeight;}
 async function sendMessage(){
