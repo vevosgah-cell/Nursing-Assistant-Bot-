@@ -6,6 +6,63 @@
 <title>Nursing Assistant | مساعد التمريض</title>
 <style>
 :root{--navy:#123047;--teal:#2b827b;--bg:#f4f7f8;--ink:#203442;--muted:#748491;--line:#e3eaee;--white:#fff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}.app{min-height:100vh;display:flex}.side{width:250px;background:var(--navy);color:white;padding:25px 18px;display:flex;flex-direction:column;gap:24px}.brand{font-size:21px;font-weight:750}.brand small{display:block;font-size:12px;color:#bdd4df;font-weight:400;margin-top:6px}.nav button{width:100%;text-align:right;background:transparent;border:0;color:#dbe8ef;padding:13px;border-radius:10px;margin:4px 0;font:inherit;cursor:pointer}.nav button.active,.nav button:hover{background:#23475e;color:white}.main{flex:1;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;background:white;border-bottom:1px solid var(--line)}.top h2{margin:0;font-size:20px}.tag{font-size:12px;color:var(--teal);background:#e6f4f1;padding:6px 10px;border-radius:20px}.content{padding:28px;max-width:1100px;margin:auto}.welcome{background:linear-gradient(120deg,#123047,#2b827b);color:white;padding:28px;border-radius:18px;margin-bottom:22px}.welcome h1{margin:0 0 10px;font-size:26px}.welcome p{margin:0;color:#dceef0}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:white;border:1px solid var(--line);border-radius:15px;padding:20px}.card h3{font-size:15px;margin:0 0 10px}.card p{color:var(--muted);font-size:14px;margin:0;line-height:1.7}.chat{display:flex;flex-direction:column;min-height:55vh;background:white;border:1px solid var(--line);border-radius:16px;overflow:hidden}.chatbody{padding:20px;flex:1;overflow-y:auto}.msg{max-width:80%;padding:13px 15px;border-radius:13px;line-height:1.7;margin:12px 0;white-space:pre-wrap}.bot{background:#eaf4f3}.student{background:#eaf0f8;margin-right:auto}.chatbar{display:flex;gap:10px;border-top:1px solid var(--line);padding:14px}.chatbar input{flex:1;border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit}.primary{background:var(--teal);color:white;border:0;border-radius:12px;padding:12px 18px;font:inherit;cursor:pointer}.muted{color:var(--muted);font-size:13px}.hidden{display:none!important}table{width:100%;border-collapse:collapse;background:white;border-radius:14px;overflow:hidden}th,td{text-align:right;padding:13px;border-bottom:1px solid var(--line);font-size:14px}th{background:#f0f5f6}.note{margin-top:20px;padding:14px;background:#fff8e9;border:1px solid #f1e3c3;border-radius:12px;font-size:13px;color:#735b27;line-height:1.6}.authbox{background:white;border:1px solid var(--line);padding:22px;border-radius:16px;margin-bottom:22px}.authbox input{display:block;width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;margin:10px 0;font:inherit}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.status{margin-top:12px;font-size:14px;line-height:1.7}.logout{background:#8d4141}.section{margin-top:18px}.section h3{margin-bottom:12px}@media(max-width:760px){.app{flex-direction:column}.side{width:100%;padding:15px}.nav{display:flex;gap:6px;overflow:auto}.nav button{white-space:nowrap;width:auto}.content{padding:16px}.cards{grid-template-columns:1fr}.top{padding:15px}.welcome h1{font-size:22px}}
+.weekly-day{
+  border:1px solid #dce5ea;
+  border-radius:12px;
+  padding:14px;
+  margin:12px 0;
+  background:#fff;
+}
+.weekly-day-title{
+  background:#123047;
+  color:#fff;
+  padding:10px 14px;
+  border-radius:9px;
+  margin-bottom:12px;
+  font-weight:bold;
+}
+.weekly-lecture{
+  border-right:4px solid #2b827b;
+  background:#f4f7f8;
+  padding:12px;
+  border-radius:8px;
+  margin:10px 0;
+}
+.weekly-lecture h4{
+  color:#123047;
+  margin:0 0 8px;
+}
+.weekly-meta{
+  color:#526573;
+  font-size:14px;
+  line-height:1.9;
+}
+.weekly-off{
+  text-align:center;
+  padding:14px;
+  background:#f4f7f8;
+  border:1px dashed #2b827b;
+  border-radius:10px;
+  color:#2b827b;
+  font-weight:bold;
+}
+.weekly-notice{
+  background:#eef5f5;
+  border-right:4px solid #2b827b;
+  padding:14px;
+  border-radius:10px;
+  margin-top:14px;
+  color:#123047;
+  line-height:1.9;
+}
+.weekly-tomorrow{
+  background:#e8f1f5;
+  border-right:4px solid #123047;
+  padding:14px;
+  border-radius:10px;
+  margin-top:14px;
+  line-height:1.9;
+} 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
