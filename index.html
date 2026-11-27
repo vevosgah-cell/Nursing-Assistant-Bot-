@@ -16,7 +16,12 @@
 <div id="authbox" class="authbox"><h3>حساب الطالب</h3><p class="muted">أنشئ حساباً جديداً أو سجّل دخولك.</p><input id="fullName" placeholder="الاسم الكامل" autocomplete="name"><input id="email" type="email" placeholder="البريد الإلكتروني" autocomplete="email"><input id="password" type="password" placeholder="كلمة المرور"><div class="actions"><button class="primary" onclick="signup()">إنشاء حساب</button><button class="primary" onclick="login()">تسجيل الدخول</button></div><div id="authStatus" class="status"></div></div>
 <div id="profileBox" class="authbox hidden"><h3 id="accountName">أنت مسجل الدخول</h3><p id="accountEmail" class="muted"></p><div class="actions"><button class="primary logout" onclick="logout()">تسجيل الخروج</button><button class="primary" onclick="show('chatPage')">ابدأ المحادثة</button>
 <button class="primary" onclick="show('lecturesPage');loadLectures()">المحاضرات الدراسية</button></div></div>
-<div class="cards"><div class="card"><h3>شرح المحاضرات</h3><p>تبسيط المفاهيم التمريضية والإجابة عن أسئلة الدراسة.</p></div><div class="card"><h3>مراجعة وأسئلة</h3><p>مساعدة في مراجعة المعلومات وصناعة أسئلة تدريبية.</p></div><div class="card"><h3>حالات سريرية</h3><p>تدريب تعليمي على الحالات والخطط التمريضية.</p></div></div><div class="note">المساعد مخصص للتعليم وليس بديلاً عن بروتوكولات المستشفى أو قرار الفريق الطبي.</div></section>
+<div class="cards">
+<div class="card"><h3>شرح المحاضرات</h3><p>تبسيط المفاهيم التمريضية والإجابة عن أسئلة الدراسة.</p></div>
+<div class="card"><h3>مراجعة وأسئلة</h3><p>مساعدة في مراجعة المعلومات وصناعة أسئلة تدريبية.</p></div>
+<div class="card"><h3>حالات سريرية</h3><p>تدريب تعليمي على الحالات والخطط التمريضية.</p></div>
+<div class="card"><h3>الأدوات التمريضية</h3><p>حاسبات طبية وأدوات مساعدة في الحسابات والتقييم التمريضي.</p></div>
+</div>
 
 <section id="chatPage" class="content hidden">
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
