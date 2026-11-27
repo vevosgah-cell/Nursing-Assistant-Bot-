@@ -73,9 +73,32 @@ async function signup(){const name=document.getElementById('fullName').value.tri
 async function login(){const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;if(!email||!password){status('authStatus','أدخل البريد وكلمة المرور.');return;}status('authStatus','جارٍ تسجيل الدخول...');const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});if(error){status('authStatus',error.message);return;}status('authStatus','تم تسجيل الدخول.');await refreshSession();}
 async function logout(){await supabaseClient.auth.signOut();currentUser=null;isAdmin=false;currentConversation=null;updateAccountUI();show('home');status('authStatus','تم تسجيل الخروج.');}
 async function refreshSession(){const {data:{session}}=await supabaseClient.auth.getSession();currentUser=session?.user||null;updateAccountUI();}
-async function updateAccountUI(){document.getElementById('authbox').classList.toggle('hidden',!!currentUser);document.getElementById('profileBox').classList.toggle('hidden',!currentUser);if(currentUser){const {data:student}=await supabaseClient.from('students').select('full_name').eq('id',currentUser.id).maybeSingle();
-document.getElementById('accountName').textContent='مرحباً async function newConversation(){if(!currentUser){show('home');status('authStatus','سجّل الدخول أولاً.');return;}const {data,error}=await supabaseClient.from('conversations').insert({student_id:currentUser.id,title:'محادثة جديدة'}).select().single();if(error){status('chatStatus',error.message);return;}currentConversation=data.id;await loadConversations();document.getElementById('conversationSelect').value=data.id;document.getElementById('chatBody').innerHTML='';status('chatStatus','تم إنشاء محادثة جديدة.');}
-async function newConversation(){
+async function updateAccountUI(){
+  document.getElementById('authbox').classList.toggle('hidden',!!currentUser);
+  document.getElementById('profileBox').classList.toggle('hidden',!currentUser);
+
+  if(currentUser){
+    const {data:student}=await supabaseClient
+      .from('students')
+      .select('full_name')
+      .eq('id',currentUser.id)
+      .maybeSingle();
+
+    document.getElementById('accountName').textContent='مرحباً '+(student?.full_name||currentUser.email);
+    document.getElementById('accountEmail').textContent=currentUser.email;
+
+    const {data:adminData,error:adminError}=await supabaseClient
+      .rpc('is_admin');
+
+    isAdmin=!adminError&&adminData===true;
+    document.getElementById('adminNav').classList.toggle('hidden',!isAdmin);
+
+    await loadConversations();
+  }else{
+    document.getElementById('adminNav').classList.add('hidden');
+  }
+}
+  async function newConversation(){
   if(!currentUser){
     show('home');
     status('authStatus','سجّل الدخول أولاً.');
