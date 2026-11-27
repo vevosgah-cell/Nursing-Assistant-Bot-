@@ -641,4 +641,159 @@ status.textContent='حدث خطأ: '+error.message;
 
   result.textContent='BMI = '+bmi.toFixed(1)+' — التصنيف: '+category;
      }
+
+const weeklyDays = [
+  "Saturday",
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday"
+];
+
+const dayArabic = {
+  Saturday: "السبت",
+  Sunday: "الأحد",
+  Monday: "الاثنين",
+  Tuesday: "الثلاثاء",
+  Wednesday: "الأربعاء",
+  Thursday: "الخميس",
+  Friday: "الجمعة"
+};
+
+const communityData = {
+  Saturday: [
+    {title:"تمريض صحة المجتمع",type:"نظري",time:"9:00 – 12:00",teachers:"م.م. د. علي فارس",place:"قاعات القسم"},
+    {title:"علم الوبائيات (Epidemiology)",type:"نظري",time:"12:00 – 2:00",teachers:"م.م. د. علي فارس",place:"قاعات القسم"}
+  ],
+  Sunday: [
+    {title:"تعزيز الصحة (Health Promotion)",type:"نظري",time:"9:00 – 11:00",teachers:"أ.د. سحر أحمد شفيق، م.د. هاشم حامد شبيب",place:"قاعات القسم"},
+    {title:"مواضيع ومشاكل مهنية (Professional Topics and Issues)",type:"نظري",time:"11:00 – 1:00",teachers:"أ.د. سحر أحمد شفيق، م.د. هاشم حامد شبيب",place:"قاعات القسم"}
+  ],
+  Monday: [
+    {title:"إدارة وقيادة التمريض (Nursing Management and Leadership)",type:"نظري وعملي",time:"9:00 – 2:00",teachers:"م.م. حيدر منصور",place:"قاعات القسم / المستشفى"}
+  ],
+  Tuesday: [
+    {title:"تمريض صحة المجتمع",type:"عملي",time:"9:00 – 2:00",teachers:"أ.د. سحر أحمد شفيق، م.م. د. علي فارس، م.د. هاشم حامد شبيب",place:"مراكز الرعاية الصحية الأولية"}
+  ],
+  Wednesday: [],
+  Thursday: [],
+  Friday: []
+};
+
+const mentalData = {
+  Saturday: [],
+  Sunday: [
+    {title:"تمريض الحالات الحرجة (Critical Care Nursing)",type:"نظري",time:"9:00 – 1:00",teachers:"م. يوسف أسدالله جمشيد، م.م. سجاد صادق سلمان",place:"قاعات القسم"}
+  ],
+  Monday: [
+    {title:"تمريض الصحة النفسية",type:"عملي",time:"9:00 – 2:00",teachers:"أ.م.د. برهان هادي درب، م.د. هاشم حامد شبيب، م.ب. شاكر عبد كمبر",place:"المستشفى / الوحدة النفسية"}
+  ],
+  Tuesday: [
+    {title:"تمريض الحالات الحرجة (Critical Care Nursing)",type:"عملي",time:"9:00 – 2:00",teachers:"م. يوسف أسدالله جمشيد، م.م. سجاد صادق سلمان، طبيب - مصطفى كاظم عطية، طبيب - عباس ياسر جاسم",place:"المستشفى / العناية المركزة"}
+  ],
+  Wednesday: [
+    {title:"تمريض الصحة النفسية",type:"نظري",time:"9:00 – 12:00",teachers:"أ.م.د. برهان هادي درب",place:"قاعات القسم"},
+    {title:"علم النفس (Psychology)",type:"نظري",time:"12:30 – 2:30",teachers:"أ.م.د. برهان هادي درب",place:"قاعات القسم"}
+  ],
+  Thursday: [],
+  Friday: []
+};
+
+function renderWeeklySchedule(data, elementId){
+  const container = document.getElementById(elementId);
+  if(!container) return;
+
+  container.innerHTML = "";
+
+  weeklyDays.forEach(day => {
+    const lectures = data[day] || [];
+    const dayBox = document.createElement("div");
+    dayBox.className = "weekly-day";
+
+    const dayTitle = document.createElement("div");
+    dayTitle.className = "weekly-day-title";
+    dayTitle.textContent = dayArabic[day];
+    dayBox.appendChild(dayTitle);
+
+    if(lectures.length === 0){
+      const off = document.createElement("div");
+      off.className = "weekly-off";
+      off.textContent = "OFF — لا توجد محاضرات";
+      dayBox.appendChild(off);
+    }else{
+      lectures.forEach(lecture => {
+        const card = document.createElement("div");
+        card.className = "weekly-lecture";
+
+        const heading = document.createElement("h4");
+        heading.textContent = lecture.title;
+        card.appendChild(heading);
+
+        const meta = document.createElement("div");
+        meta.className = "weekly-meta";
+        meta.innerHTML = `
+          <div><strong>النوع:</strong> ${lecture.type}</div>
+          <div><strong>الوقت:</strong> ${lecture.time}</div>
+          <div><strong>التدريسي:</strong> ${lecture.teachers}</div>
+          <div><strong>المكان:</strong> ${lecture.place}</div>
+        `;
+        card.appendChild(meta);
+        dayBox.appendChild(card);
+      });
+    }
+
+    container.appendChild(dayBox);
+  });
+
+  const notice = document.createElement("div");
+  notice.className = "weekly-notice";
+  notice.textContent = "تنبيه الغيابات: الغيابات تثبت ورقياً لدى كل تدريسي، وكل طالب يتجاوز الحد المسموح به بالغيابات سيتم اعتباره راسباً بالغياب.";
+  container.appendChild(notice);
+
+  const tomorrowBox = document.createElement("div");
+  tomorrowBox.className = "weekly-tomorrow";
+
+  const tomorrow = getTomorrowDay();
+  const tomorrowLectures = data[tomorrow] || [];
+
+  let tomorrowHTML = `<strong>📅 جدول باچر — ${dayArabic[tomorrow]}</strong>`;
+
+  if(tomorrowLectures.length === 0){
+    tomorrowHTML += `<div>ماكو محاضرات باچر — OFF.</div>`;
+  }else{
+    tomorrowLectures.forEach(lecture => {
+      tomorrowHTML += `
+        <div style="margin-top:10px;">
+          <strong>${lecture.title}</strong>
+          <div>الوقت: ${lecture.time}</div>
+          <div>النوع: ${lecture.type}</div>
+          <div>التدريسي: ${lecture.teachers}</div>
+          <div>المكان: ${lecture.place}</div>
+        </div>
+      `;
+    });
+  }
+
+  tomorrowBox.innerHTML = tomorrowHTML;
+  container.appendChild(tomorrowBox);
+}
+
+function getTomorrowDay(){
+  const now = new Date();
+  const baghdadDate = new Date(
+    now.toLocaleString("en-US",{timeZone:"Asia/Baghdad"})
+  );
+  baghdadDate.setDate(baghdadDate.getDate() + 1);
+
+  return new Intl.DateTimeFormat("en-US",{
+    weekday:"long",
+    timeZone:"Asia/Baghdad"
+  }).format(baghdadDate);
+}
+
+renderWeeklySchedule(communityData,"communitySchedule");
+renderWeeklySchedule(mentalData,"mentalSchedule");
+
 </script></body></html>
