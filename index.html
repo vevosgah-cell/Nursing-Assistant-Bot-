@@ -137,7 +137,31 @@ async function updateAccountUI(){
   document.getElementById('chatBody').innerHTML='';
   status('chatStatus','تم إنشاء '+title+' بنجاح.');
 }
-async function loadMessages(id){if(!id){currentConversation=null;return;}currentConversation=id;if(!currentUser)return;const {data,error}=await supabaseClient.from('messages').select('*').eq('conversation_id',id).order('created_at',{ascending:true});if(error){status('chatStatus',error.message);return;}const body=document.getElementById('chatBody');body.innerHTML='';(data||[]).forEach(m=>appendMessage(m.role,m.content));}
+async function loadConversations(){
+  if(!currentUser)return;
+
+  const {data,error}=await supabaseClient
+    .from('conversations')
+    .select('id,title,created_at')
+    .eq('student_id',currentUser.id)
+    .order('created_at',{ascending:false});
+
+  if(error){
+    status('chatStatus','تعذر تحميل المحادثات: '+error.message);
+    return;
+  }
+
+  const select=document.getElementById('conversationSelect');
+  select.innerHTML='<option value="">اختر محادثة</option>';
+
+  (data||[]).forEach(c=>{
+    const option=document.createElement('option');
+    option.value=c.id;
+    option.textContent=c.title||'محادثة';
+    select.appendChild(option);
+  });
+          }
+  async function loadMessages(id){if(!id){currentConversation=null;return;}currentConversation=id;if(!currentUser)return;const {data,error}=await supabaseClient.from('messages').select('*').eq('conversation_id',id).order('created_at',{ascending:true});if(error){status('chatStatus',error.message);return;}const body=document.getElementById('chatBody');body.innerHTML='';(data||[]).forEach(m=>appendMessage(m.role,m.content));}
 function appendMessage(role,content){const body=document.getElementById('chatBody'),div=document.createElement('div');div.className='msg '+(role==='user'?'student':'bot');div.textContent=content;body.appendChild(div);body.scrollTop=body.scrollHeight;}
 async function sendMessage(){
 if(!currentUser){show('home');status('authStatus','سجّل الدخول أولاً.');return;}
