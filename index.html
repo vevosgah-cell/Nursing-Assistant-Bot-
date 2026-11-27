@@ -187,6 +187,40 @@ async function loadConversations(){
     select.appendChild(option);
   });
           }
+  async function renameConversation(){
+  if(!currentUser){
+    status('chatStatus','سجّل الدخول أولاً.');
+    return;
+  }
+
+  const select=document.getElementById('conversationSelect');
+  const id=select.value;
+
+  if(!id){
+    status('chatStatus','اختر محادثة أولاً.');
+    return;
+  }
+
+  const oldTitle=select.options[select.selectedIndex].text;
+  const newTitle=prompt('اكتب الاسم الجديد للمحادثة:',oldTitle);
+
+  if(!newTitle||!newTitle.trim())return;
+
+  const {error}=await supabaseClient
+    .from('conversations')
+    .update({title:newTitle.trim()})
+    .eq('id',id)
+    .eq('student_id',currentUser.id);
+
+  if(error){
+    status('chatStatus','تعذرت إعادة التسمية: '+error.message);
+    return;
+  }
+
+  await loadConversations();
+  select.value=id;
+  status('chatStatus','تم تغيير اسم المحادثة بنجاح.');
+  }
   async function loadMessages(id){if(!id){currentConversation=null;return;}currentConversation=id;if(!currentUser)return;const {data,error}=await supabaseClient.from('messages').select('*').eq('conversation_id',id).order('created_at',{ascending:true});if(error){status('chatStatus',error.message);return;}const body=document.getElementById('chatBody');body.innerHTML='';(data||[]).forEach(m=>appendMessage(m.role,m.content));}
 function appendMessage(role,content){const body=document.getElementById('chatBody'),div=document.createElement('div');div.className='msg '+(role==='user'?'student':'bot');div.textContent=content;body.appendChild(div);body.scrollTop=body.scrollHeight;}
 async function sendMessage(){
